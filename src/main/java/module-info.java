@@ -15,5 +15,4 @@ module NoteApp {
     exports com.marufeb.note.model;
     exports com.marufeb.note.model.exceptions;
     exports com.marufeb.note.repository;
-
 }

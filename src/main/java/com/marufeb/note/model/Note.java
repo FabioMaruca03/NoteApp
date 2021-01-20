@@ -13,6 +13,8 @@ import java.util.UUID;
  * @since January 2021
  */
 @Entity(name = "note")
+@NamedQuery(name = "Note.byUUID", query = "FROM note WHERE id = ?")
+@NamedQuery(name = "Note.list", query = "DELETE FROM note")
 @Table(name = "notes")
 public class Note {
 
@@ -31,15 +33,42 @@ public class Note {
     @Column(name = "note_title")
     private String title;
 
-    @OneToMany(targetEntity = Content.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(targetEntity = Content.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Column(name = "note_contents")
     private List<Content> content;
 
+    /**
+     * Empty constructor - used by HIBERNATE -
+     */
     public Note() { }
 
+    /**
+     * Creates a new note with a title and a creation date
+     * @param creation The creation date
+     * @param title The title of the note
+     */
     public Note(Date creation, String title) {
         this.creation = creation;
         this.title = title;
+    }
+
+    /**
+     * Creates a new note with a title, a creation date and a mod date
+     * @param modDate The last modification date
+     * @param creation The creation date
+     * @param title The creation title
+     */
+    public Note(Date modDate, Date creation, String title) {
+        this.modDate = modDate;
+        this.creation = creation;
+        this.title = title;
+    }
+
+    /**
+     * Sets initializes the modified flag
+     */
+    @PostLoad void postLoad() {
+        modified = modDate !=null;
     }
 
     public void setId(UUID id) {
@@ -49,12 +78,6 @@ public class Note {
     @Id
     public UUID getId() {
         return id;
-    }
-
-    public Note(Date modDate, Date creation, String title) {
-        this.modDate = modDate;
-        this.creation = creation;
-        this.title = title;
     }
 
     public Content addContent(String name, String value) {
@@ -103,6 +126,9 @@ public class Note {
         return modified;
     }
 
+    /**
+     * Represents a field in a particular note
+     */
     @Entity(name = "note_content")
     @Table(name = "note_contents")
     public static class Content {
@@ -167,10 +193,5 @@ public class Note {
         public Long getId() {
             return id;
         }
-    }
-
-    @PostLoad
-    void postLoad() {
-        modified = modDate !=null;
     }
 }
