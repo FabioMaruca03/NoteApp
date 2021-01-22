@@ -1,5 +1,6 @@
 package com.marufeb.note.repository;
 
+import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 
@@ -15,14 +16,14 @@ import java.util.UUID;
  * @author fabiomaruca
  * @since January 2021
  */
-public class NoteRepo implements Repository<Note, UUID> {
+public class FormRepo implements Repository<Form, UUID> {
 
     @PersistenceContext(name = "notes")
     private EntityManager EM;
 
     @Override
-    public Optional<Note> get(UUID key) {
-        final TypedQuery<Note> query = EM.createQuery("Note.byUUID", Note.class);
+    public Optional<Form> get(UUID key) {
+        final TypedQuery<Form> query = EM.createQuery("Form.byUUID", Form.class);
         query.setParameter(0, key);
         try {
             return Optional.ofNullable(query.getSingleResult());
@@ -34,24 +35,24 @@ public class NoteRepo implements Repository<Note, UUID> {
     }
 
     @Override
-    public List<Note> getAll() {
-        final TypedQuery<Note> query = EM.createQuery("Note.list", Note.class);
+    public List<Form> getAll() {
+        final TypedQuery<Form> query = EM.createQuery("Form.list", Form.class);
         return query.getResultList();
     }
 
     @Override
-    public void update(Note obj) {
+    public void update(Form obj) {
         RepoUtils.executeNotes(em->em.persist(obj));
     }
 
     @Override
-    public void remove(Note obj) {
+    public void remove(Form obj) {
         RepoUtils.executeNotes(em->em.remove(obj));
     }
 
     @Override
     public void drop() {
-        EM.createQuery("Note.list", Note.class)
+        EM.createQuery("Form.list", Note.class)
                 .getResultStream()
                 .forEach(it->RepoUtils.executeNotes(em->em.remove(it)));
     }

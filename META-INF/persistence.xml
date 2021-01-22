@@ -4,7 +4,7 @@
         <class>com.marufeb.note.model.Note</class>
         <properties>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/notes"/>
+                      value="jdbc:mysql://localhost:3306/notes?createDatabaseIfNotExist=true"/>
             <property name="javax.persistence.jdbc.user" value="root"/>
             <property name="javax.persistence.jdbc.password" value="0x269926"/>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>

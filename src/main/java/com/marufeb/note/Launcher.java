@@ -1,6 +1,7 @@
 package com.marufeb.note;
 
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
+import com.marufeb.note.repository.NoteRepo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

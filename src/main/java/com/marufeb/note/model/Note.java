@@ -1,14 +1,17 @@
 package com.marufeb.note.model;
 
 import com.marufeb.note.model.exceptions.InvalidContentException;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
+ * Describes a note which is basically a collection of contents
  * @author fabiomaruca
  * @since January 2021
  */
@@ -16,9 +19,15 @@ import java.util.UUID;
 @NamedQuery(name = "Note.byUUID", query = "FROM note WHERE id = ?")
 @NamedQuery(name = "Note.list", query = "DELETE FROM note")
 @Table(name = "notes")
-public class Note {
+public class Note implements Serializable {
 
     @Column(name = "note_id")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Id
     private UUID id;
 
     @Column(name = "note_modified")
@@ -75,7 +84,6 @@ public class Note {
         this.id = id;
     }
 
-    @Id
     public UUID getId() {
         return id;
     }
@@ -131,9 +139,15 @@ public class Note {
      */
     @Entity(name = "note_content")
     @Table(name = "note_contents")
-    public static class Content {
+    public static class Content implements Serializable {
 
         @Column(name = "content_id")
+        @Id
+        @GeneratedValue(generator = "UUID")
+        @GenericGenerator(
+                name = "UUID",
+                strategy = "org.hibernate.id.UUIDGenerator"
+        )
         private Long id;
 
         @ManyToOne(targetEntity = Note.class, cascade = CascadeType.ALL)
@@ -146,6 +160,17 @@ public class Note {
         @Column(name = "value")
         private String value;
 
+        /**
+         * Empty content constructor
+         */
+        public Content() { }
+
+        /**
+         * Creates a new Content with a name, a value and a parent Note
+         * @param name The content name
+         * @param value The content value
+         * @param note The parent {@link Note}
+         */
         public Content(String name, String value, Note note) {
             if (parent == null)
                 throw new InvalidContentException("Unable to construct content", new NullPointerException("Parent is null"));
@@ -158,8 +183,6 @@ public class Note {
             this.name = name;
             this.value = value;
         }
-
-        public Content() { }
 
         public Note getParent() {
             return parent;
@@ -189,7 +212,6 @@ public class Note {
             this.id = id;
         }
 
-        @Id
         public Long getId() {
             return id;
         }
