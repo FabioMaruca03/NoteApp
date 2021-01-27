@@ -4,6 +4,7 @@ import com.marufeb.note.model.exceptions.ExceptionsHandler;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import java.util.function.Consumer;
 
@@ -14,8 +15,7 @@ import java.util.function.Consumer;
  */
 public class RepoUtils {
 
-    @PersistenceContext(name = "notes")
-    public static EntityManager EM_NOTES;
+    public static final EntityManager EM_NOTES = Persistence.createEntityManagerFactory("notes").createEntityManager();
 
     /**
      * Executes an operation inside an {@link EntityTransaction}

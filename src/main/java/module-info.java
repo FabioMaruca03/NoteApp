@@ -5,6 +5,8 @@ module NoteApp {
     requires org.hibernate.orm.core;
     requires net.bytebuddy;
     requires java.persistence;
+    requires java.sql;
+    requires java.xml.bind;
 
     opens com.marufeb.note to javafx.controls;
     opens com.marufeb.note.graphics to javafx.controls, javafx.fxml;

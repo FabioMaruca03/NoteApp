@@ -36,6 +36,12 @@ public interface Repository<T, K> {
     void remove(T obj);
 
     /**
+     * Adds a particular object
+     * @param obj The object to persist
+     */
+    void add(T obj);
+
+    /**
      * Deletes the whole repository.
      * <b>NOT</b> the table itself
      */

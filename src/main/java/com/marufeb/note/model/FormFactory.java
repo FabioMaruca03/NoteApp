@@ -28,6 +28,7 @@ public class FormFactory {
         if (form.fields.stream().anyMatch(it->it.getIndex() == index))
             field.setIndex(form.fields.stream().map(Form.Field::getIndex).max(Integer::compareTo).orElse(0)+1);
         else field.setIndex(index);
+        field.setId(name);
         form.addField(field);
         return this;
     }

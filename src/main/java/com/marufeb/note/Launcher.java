@@ -6,7 +6,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 
 import static com.marufeb.note.graphics.Helper.*;
 
@@ -33,6 +36,7 @@ public class Launcher extends Application {
         final Scene s = loadFXML("global", p-> System.out.println("[I] - Loaded global pane"));
         stage.setTitle("Notes - A great solution");
         stage.setScene(s);
+        stage.show();
     }
 
 }

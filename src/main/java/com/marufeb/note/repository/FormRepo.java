@@ -4,9 +4,7 @@ import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,15 +14,14 @@ import java.util.UUID;
  * @author fabiomaruca
  * @since January 2021
  */
-public class FormRepo implements Repository<Form, UUID> {
+public class FormRepo implements Repository<Form, Long> {
 
-    @PersistenceContext(name = "notes")
-    private EntityManager EM;
+    private final EntityManager EM = Persistence.createEntityManagerFactory("notes").createEntityManager();
 
     @Override
-    public Optional<Form> get(UUID key) {
-        final TypedQuery<Form> query = EM.createQuery("Form.byUUID", Form.class);
-        query.setParameter(0, key);
+    public Optional<Form> get(Long key) {
+        final TypedQuery<Form> query = EM.createNamedQuery("Form.byUUID", Form.class);
+        query.setParameter(1, key);
         try {
             return Optional.ofNullable(query.getSingleResult());
         } catch (Exception e) {
@@ -36,13 +33,13 @@ public class FormRepo implements Repository<Form, UUID> {
 
     @Override
     public List<Form> getAll() {
-        final TypedQuery<Form> query = EM.createQuery("Form.list", Form.class);
+        final TypedQuery<Form> query = EM.createNamedQuery("Form.list", Form.class); // fixme
         return query.getResultList();
     }
 
     @Override
     public void update(Form obj) {
-        RepoUtils.executeNotes(em->em.persist(obj));
+        RepoUtils.executeNotes(em->em.merge(obj));
     }
 
     @Override
@@ -51,8 +48,16 @@ public class FormRepo implements Repository<Form, UUID> {
     }
 
     @Override
+    public void add(Form obj) {
+        RepoUtils.executeNotes(em-> {
+            obj.getFields().forEach(em::persist);
+            em.persist(obj);
+        });
+    }
+
+    @Override
     public void drop() {
-        EM.createQuery("Form.list", Note.class)
+        EM.createNamedQuery("Form.list", Note.class)
                 .getResultStream()
                 .forEach(it->RepoUtils.executeNotes(em->em.remove(it)));
     }

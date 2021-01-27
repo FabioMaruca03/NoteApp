@@ -4,7 +4,7 @@ import com.marufeb.note.model.Note;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
@@ -15,15 +15,14 @@ import java.util.UUID;
  * @author fabiomaruca
  * @since January 2021
  */
-public class NoteRepo implements Repository<Note, UUID> {
+public class NoteRepo implements Repository<Note, Long> {
 
-    @PersistenceContext(name = "notes")
-    private EntityManager EM;
+    private final EntityManager EM = Persistence.createEntityManagerFactory("notes").createEntityManager();
 
     @Override
-    public Optional<Note> get(UUID key) {
-        final TypedQuery<Note> query = EM.createQuery("Note.byUUID", Note.class);
-        query.setParameter(0, key);
+    public Optional<Note> get(Long key) {
+        final TypedQuery<Note> query = EM.createNamedQuery("Note.byUUID", Note.class);
+        query.setParameter(1, key);
         try {
             return Optional.ofNullable(query.getSingleResult());
         } catch (Exception e) {
@@ -35,13 +34,13 @@ public class NoteRepo implements Repository<Note, UUID> {
 
     @Override
     public List<Note> getAll() {
-        final TypedQuery<Note> query = EM.createQuery("Note.list", Note.class);
+        final TypedQuery<Note> query = EM.createNamedQuery("Note.list", Note.class);
         return query.getResultList();
     }
 
     @Override
     public void update(Note obj) {
-        RepoUtils.executeNotes(em->em.persist(obj));
+        RepoUtils.executeNotes(em->em.merge(obj));
     }
 
     @Override
@@ -50,9 +49,16 @@ public class NoteRepo implements Repository<Note, UUID> {
     }
 
     @Override
+    public void add(Note obj) {
+        RepoUtils.executeNotes(em-> em.persist(obj));
+    }
+
+    @Override
     public void drop() {
-        EM.createQuery("Note.list", Note.class)
-                .getResultStream()
-                .forEach(it->RepoUtils.executeNotes(em->em.remove(it)));
+        try {
+            EM.createNamedQuery("Note.list", Note.class)
+                    .getResultStream()
+                    .forEach(it->RepoUtils.executeNotes(em->em.remove(it)));
+        } catch (Exception ignore) { }
     }
 }
