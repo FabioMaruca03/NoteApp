@@ -28,6 +28,9 @@ public class Note implements Serializable {
     @Column(name = "note_modified")
     private Date modDate;
 
+    @OneToOne
+    private Form relatedForm = new Form();
+
     @Transient
     private boolean modified = false;
 
@@ -134,6 +137,14 @@ public class Note implements Serializable {
 
     public List<Content> getContent() {
         return content;
+    }
+
+    public Form getRelatedForm() {
+        return relatedForm;
+    }
+
+    public void setRelatedForm(Form relatedForm) {
+        this.relatedForm = relatedForm;
     }
 
     /**

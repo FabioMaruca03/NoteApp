@@ -7,6 +7,9 @@ module NoteApp {
     requires java.persistence;
     requires java.sql;
     requires java.xml.bind;
+//    TO BE REMOVED
+    requires openrtf;
+    requires com.github.librepdf.openpdf;
 
     opens com.marufeb.note to javafx.controls;
     opens com.marufeb.note.graphics to javafx.controls, javafx.fxml;
@@ -14,6 +17,7 @@ module NoteApp {
 
     exports com.marufeb.note;
     exports com.marufeb.note.graphics;
+    exports com.marufeb.note.graphics.form;
     exports com.marufeb.note.model;
     exports com.marufeb.note.model.exceptions;
     exports com.marufeb.note.repository;

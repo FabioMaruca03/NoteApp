@@ -1,12 +1,9 @@
 package com.marufeb.note.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Describes a new Form.
@@ -32,7 +29,7 @@ public class Form implements Serializable {
     private String name;
 
     public Form() {
-        fields = new ArrayList<>();
+        postLoad();
     }
 
     /**
@@ -40,7 +37,7 @@ public class Form implements Serializable {
      * @param field The field you want to be added
      */
     public void addField(Field field) {
-        if (fields.size() == 0 || fields.stream().noneMatch(it->it.id.equals(field.id))) {
+        if (fields.size() == 0 || fields.stream().noneMatch(it->it.name.equals(field.name))) {
             field.parent = this;
             fields.add(field);
         }
@@ -83,8 +80,9 @@ public class Form implements Serializable {
     public static class Field implements Serializable{
 
         @Id
-        @Column(name = "name", nullable = false, unique = true)
-        private String id;
+        private long id;
+
+        private String name;
 
         @Column(name = "i")
         private int index;
@@ -102,12 +100,12 @@ public class Form implements Serializable {
             this.parent = p;
         }
 
-        public void setId(String id) {
-            this.id = id;
+        public void setName(String id) {
+            this.name = id;
         }
 
-        public String getId() {
-            return id;
+        public String getName() {
+            return name;
         }
 
         public FieldType getType() {
@@ -139,10 +137,8 @@ public class Form implements Serializable {
     /**
      * Defines field types for an hypothetical GUI API
      */
-
     public enum FieldType implements Serializable{
         TEXT_FIELD, CHECKBOX, NUMERIC_FIELD, EMAIL, LABEL
     }
-
 }
 

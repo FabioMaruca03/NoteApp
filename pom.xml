@@ -45,5 +45,13 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
+
+<!--       Note processing -->
+        <!--    RTF FOR IMPORT   -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openrtf</artifactId>
+            <version>1.2.0</version>
+        </dependency>
     </dependencies>
 </project>

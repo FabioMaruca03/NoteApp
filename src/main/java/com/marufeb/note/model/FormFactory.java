@@ -4,8 +4,8 @@ package com.marufeb.note.model;
  * Helps you creating a {@link Form}
  */
 public class FormFactory {
-    // todo: finish the factory
     private Form form;
+    private Form.Field last;
 
     /**
      * Creates a new FormFactory.
@@ -28,8 +28,9 @@ public class FormFactory {
         if (form.fields.stream().anyMatch(it->it.getIndex() == index))
             field.setIndex(form.fields.stream().map(Form.Field::getIndex).max(Integer::compareTo).orElse(0)+1);
         else field.setIndex(index);
-        field.setId(name);
+        field.setName(name);
         form.addField(field);
+        last = field;
         return this;
     }
 
@@ -52,4 +53,11 @@ public class FormFactory {
         return form;
     }
 
+    public Form.Field getLastAdded() {
+        return last;
+    }
+
+    public Form getForm() {
+        return form;
+    }
 }
