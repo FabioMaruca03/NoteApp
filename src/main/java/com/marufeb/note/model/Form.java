@@ -3,6 +3,7 @@ package com.marufeb.note.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -64,6 +65,14 @@ public class Form implements Serializable {
         return fields;
     }
 
+    public Note toNote(String title) {
+        final Note note = new Note();
+        note.setTitle(title);
+        note.setCreation(Calendar.getInstance().getTime());
+        note.setRelatedForm(this);
+        return note;
+    }
+
     @PostLoad
     void postLoad() {
         if (fields == null) {
@@ -80,6 +89,7 @@ public class Form implements Serializable {
     public static class Field implements Serializable{
 
         @Id
+        @GeneratedValue
         private long id;
 
         private String name;

@@ -8,7 +8,6 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This repository provides you CRUD operations
@@ -45,7 +44,10 @@ public class NoteRepo implements Repository<Note, Long> {
 
     @Override
     public void remove(Note obj) {
-        RepoUtils.executeNotes(em->em.remove(obj));
+        RepoUtils.executeNotes(em-> {
+            obj.getContent().forEach(entity -> em.remove(em.contains(entity) ? entity : em.merge(entity)));
+            em.remove(em.contains(obj) ? obj : em.merge(obj));
+        });
     }
 
     @Override

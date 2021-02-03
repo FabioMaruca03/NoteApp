@@ -75,7 +75,7 @@ public class FormPopup implements Initializable {
     private void next(ActionEvent event) {
         final Form selectedItem = available.getSelectionModel().getSelectedItem();
         if (selectedItem!=null && !creating) {
-            consumer.accept(selectedItem);
+            consumer.accept(selectedItem); // Then updates the CustomForm
             ((Stage) available.getScene().getWindow()).close();
         } else {
             hide(true);
@@ -108,9 +108,12 @@ public class FormPopup implements Initializable {
     void save(ActionEvent event) {
         if (!formName.getText().isBlank()) {
             final Form build = formFactory.build();
-            build.setName(formName.getText());
+            final long count = available.getItems().stream().filter(it -> it.getName().equals(formName.getText())).count()+1;
+            build.setName(count==1?formName.getText():(formName.getText()+"#"+count));
+            repo.getAll().forEach(it-> System.out.println(it.getName()));
             repo.add(build);
             updateAvailable();
+
             hide(false);
         }
         event.consume();
@@ -155,12 +158,6 @@ public class FormPopup implements Initializable {
         }).start();
 
         components.setItems(FXCollections.observableArrayList(Form.FieldType.values()));
-
-        formName.textProperty().addListener((ob, o, n) -> {
-            if (n.isBlank() || n.trim().length() == 0 || !Character.isDigit(n.trim().charAt(0))) {
-                formName.setText(o);
-            }
-        });
 
         hide(false);
     }

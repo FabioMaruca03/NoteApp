@@ -33,7 +33,7 @@ public class FormRepo implements Repository<Form, Long> {
 
     @Override
     public List<Form> getAll() {
-        final TypedQuery<Form> query = EM.createNamedQuery("Form.list", Form.class); // fixme
+        final TypedQuery<Form> query = EM.createNamedQuery("Form.list", Form.class);
         return query.getResultList();
     }
 
@@ -44,14 +44,17 @@ public class FormRepo implements Repository<Form, Long> {
 
     @Override
     public void remove(Form obj) {
-        RepoUtils.executeNotes(em->em.remove(obj));
+        RepoUtils.executeNotes(em -> {
+            obj.getFields().forEach(em::remove);
+            em.remove(obj);
+        });
     }
 
     @Override
     public void add(Form obj) {
         RepoUtils.executeNotes(em-> {
-            obj.getFields().forEach(em::persist);
-            em.persist(obj);
+            obj.getFields().forEach(entity -> em.remove(em.contains(entity) ? entity : em.merge(entity)));
+            em.persist(em.contains(obj) ? obj : em.merge(obj));
         });
     }
 

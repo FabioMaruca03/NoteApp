@@ -1,7 +1,6 @@
 package com.marufeb.note.model;
 
 import com.marufeb.note.model.exceptions.InvalidContentException;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -104,7 +103,7 @@ public class Note implements Serializable {
     }
 
     public Optional<Content> getContent(String name) {
-        return content.stream().filter(it->it.name.equals(name)).findFirst();
+        return content.stream().filter(it->it.name.equals(name.toLowerCase())).findFirst();
     }
 
     public Date getModDate() {
@@ -159,7 +158,7 @@ public class Note implements Serializable {
         @GeneratedValue
         private long id;
 
-        @ManyToOne(cascade = CascadeType.ALL)
+        @ManyToOne
         private Note parent;
 
         private String name;
