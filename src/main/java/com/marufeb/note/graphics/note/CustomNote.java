@@ -7,7 +7,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 
-import java.text.SimpleDateFormat;
 import java.util.function.Consumer;
 
 
@@ -21,7 +20,6 @@ public class CustomNote extends ListCell<Note> {
     private final BorderPane pane = new BorderPane();
     private final Label center = new Label();
     private final TextField field = new TextField();
-//    private final SimpleDateFormat format = new SimpleDateFormat("HH:mm dd-MM-yyyy");
     private Note note;
 
     public CustomNote(Consumer<Note> onChange) {
@@ -55,12 +53,7 @@ public class CustomNote extends ListCell<Note> {
     protected void updateItem(Note item, boolean empty) {
         super.updateItem(item, empty);
         if (!empty) {
-//            String title = item.getTitle()+" at ";
             String title = item.getTitle();
-
-//            if (item.isModified()) {
-//                title += format.format(item.getModDate());
-//            } else title += format.format(item.getCreation());
 
             note = item;
             center.setText(title);

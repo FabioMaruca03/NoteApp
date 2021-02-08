@@ -3,12 +3,14 @@ package com.marufeb.note.graphics.form;
 import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * Represents graphically the Form itself.
@@ -22,11 +24,15 @@ import java.util.Map;
 public class CustomForm extends ListView<Form.Field> {
     private Form form;
     private final Map<String, TextField> components = new HashMap<>();
+    private boolean clear = true;
+    private Semaphore semaphore;
+    private int permits;
 
     /**
      * Updates the current status to the given Form. Then constructs the whole {@link Form}
      * @param form The form to use
      */
+    @SuppressWarnings("unused")
     public CustomForm(Form form) {
         this();
         update(form);
@@ -36,11 +42,11 @@ public class CustomForm extends ListView<Form.Field> {
      * Initializes the cell factory
      */
     public CustomForm() {
-        setCellFactory(cell -> new ListCell<>() {
+        setCellFactory(cell -> new ListCell<Form.Field>() {
             @Override
             protected void updateItem(Form.Field item, boolean empty) {
                 super.updateItem(item, empty);
-                if (!empty) {
+                if (!empty && item != null) {
                     setGraphic(construct(item));
                 } else setGraphic(null);
             }
@@ -51,10 +57,22 @@ public class CustomForm extends ListView<Form.Field> {
      * Updates the current Form
      * @param form The form you want to use
      */
-    public void update(Form form) {
-        this.form = form;
-        getItems().clear();
-        form.fields.forEach(it->getItems().add(it));
+    public synchronized void update(Form form) {
+//        if (semaphore == null || permits != form.fields.size()-1) {
+            permits = form.fields.size() - 1;
+            this.semaphore = new Semaphore(permits);
+//        }
+        if (clear) {
+            clear();
+            this.form = form;
+        } else getItems().clear();
+        clear = true;
+        try {
+            semaphore.acquire(permits);
+            form.fields.forEach(it->getItems().add(it));
+        } catch (InterruptedException e) {
+            ExceptionsHandler.register(e);
+        }
     }
 
     /**
@@ -62,7 +80,7 @@ public class CustomForm extends ListView<Form.Field> {
      * @param field The field you want to add
      * @return The resulting {@link BorderPane}
      */
-    private BorderPane construct(Form.Field field) {
+    private synchronized BorderPane construct(Form.Field field) {
         final BorderPane temp = new BorderPane();
         final TextField f;
         temp.setMaxHeight(60);
@@ -74,18 +92,14 @@ public class CustomForm extends ListView<Form.Field> {
                 f = component;
                 break;
             }
-//            case CHECKBOX: {
-//                final CheckBox checkBox = new CheckBox();
-//                temp.setRight(checkBox);
-//                break;
-//            }
             case EMAIL: {
                 final TextField component = new TextField();
                 component.setPromptText("Email @");
                 component.setOnKeyTyped( e-> {
-                    if (e.getCode().equals(KeyCode.ENTER)) {
-                        if (!e.getText().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"))
+                    if (e.getCode() == KeyCode.ENTER) {
+                        if (!e.getText().matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
                             component.setText("Invalid email ");
+                        }
                     }
                     e.consume();
                 });
@@ -97,18 +111,25 @@ public class CustomForm extends ListView<Form.Field> {
                 final TextField component = new TextField();
                 component.setPromptText("Numbers only [0-9]");
                 component.textProperty().addListener((ob, o, n)->{
-                    if (!n.chars().allMatch(Character::isDigit))
+                    if (!n.chars().allMatch(Character::isDigit)) {
                         component.setText(o);
+                    }
                 });
                 temp.setRight(component);
                 f = component;
                 break;
             }
-            case LABEL: {
-                final Label label = createLabel(temp);
-                label.setText("PropertyName");
-                temp.setRight(label);
-            }
+//            case CHECKBOX: {
+//                final CheckBox checkBox = new CheckBox();
+//                temp.setRight(checkBox);
+//                break;
+//            }
+
+//            case LABEL: {
+//                final Label label = createLabel(temp);
+//                label.setText("PropertyName");
+//                temp.setRight(label);
+//            }
             default:
                 f = null;
         }
@@ -116,9 +137,12 @@ public class CustomForm extends ListView<Form.Field> {
         final Label label = createLabel(temp);
         label.setText(field.getName());
         temp.setLeft(label);
-
         if (f != null)
-            components.putIfAbsent(field.getName(), f);
+            components.put(field.getName(), f);
+
+        if (semaphore != null && semaphore.availablePermits() != permits) {
+            semaphore.release(1);
+        }
         return temp;
     }
 
@@ -131,20 +155,20 @@ public class CustomForm extends ListView<Form.Field> {
         final Label label = new Label();
         final TextField name = new TextField();
         name.setPromptText("Property name");
-        label.setOnMouseClicked(e->{
-            if (e.getClickCount() == 2) {
-                name.setText(label.getText());
-                temp.setLeft(name);
-            }
-            e.consume();
-        });
-        label.setOnKeyTyped(e->{
-            if (e.getCode() == KeyCode.ENTER) {
-                label.setText(name.getText());
-                name.clear();
-            }
-            e.consume();
-        });
+//        label.setOnMouseClicked(e->{       // DISABLED
+//            if (e.getClickCount() == 2) {
+//                name.setText(label.getText());
+//                temp.setLeft(name);
+//            }
+//            e.consume();
+//        });
+//        label.setOnKeyTyped(e->{
+//            if (e.getCode() == KeyCode.ENTER) {
+//                label.setText(name.getText());
+//                name.clear();
+//            }
+//            e.consume();
+//        });
         return label;
     }
 
@@ -152,10 +176,30 @@ public class CustomForm extends ListView<Form.Field> {
      * Initializes each field in order to match an existing note
      * @param note The note you want to utilize
      */
-    public void init(Note note) {
-        if (note.getRelatedForm().getName().equals(form.getName())) {
-            note.getContent().forEach(content -> components.get(content.getName()).setText(content.getValue()));
-        } else ExceptionsHandler.register(new InvalidFormException(form));
+    public synchronized void init(Note note) {
+        clear = false;
+        update(note.getRelatedForm());
+
+        new Thread(() -> {
+            try {
+                this.semaphore.acquire(permits);
+                Thread.sleep(30);
+                note.getContent().forEach(content -> {
+                    Platform.runLater(() -> {
+                        try {
+                            components.get(content.getName()).setText(content.getValue());
+                        } catch (Exception e) {
+                            ExceptionsHandler.register(e);
+                        } finally {
+                            this.semaphore.release(permits);
+                        }
+                    });
+                });
+            } catch (InterruptedException e) {
+                ExceptionsHandler.register(e);
+            }
+        }).start();
+
     }
 
     /**
@@ -165,7 +209,7 @@ public class CustomForm extends ListView<Form.Field> {
     public void register(Note note) {
         components.forEach((key, value) -> {
             try {
-                note.getContent(key).ifPresentOrElse(content -> content.setValue(value.getText().isBlank() ? "?" : value.getText()), () -> note.addContent(key, value.getText()));
+                note.getContent(key).ifPresentOrElse(content -> content.setValue(value.getText().isBlank() ? "[-]" : value.getText()), () -> note.addContent(key, value.getText()));
             } catch (NullPointerException ignore) {
                 note.addContent(key, value.getText());
             }
@@ -175,14 +219,18 @@ public class CustomForm extends ListView<Form.Field> {
     /**
      * @return A map which contains all typed components inside it
      */
+    @SuppressWarnings("unused")
     public Map<String, String> getComponents() {
         final Map<String, String> result = new HashMap<>();
         components.forEach((key, value) -> {
             final String text = value.getText();
-            result.put(key, text.isBlank() ? "?" : text);
-
+            result.put(key, text.isBlank() ? "[-]" : text);
         });
         return result;
+    }
+
+    public Map<String, TextField> getFields() {
+        return components;
     }
 
     /**
@@ -193,7 +241,7 @@ public class CustomForm extends ListView<Form.Field> {
         return form;
     }
 
-    public void clear() {
+    public synchronized void clear() {
         form = null;
         getItems().clear();
         components.clear();

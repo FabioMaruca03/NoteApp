@@ -15,6 +15,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import com.marufeb.note.graphics.form.CustomForm?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="469.0" prefWidth="717.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.marufeb.note.graphics.Global">
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -23,7 +24,6 @@
                <menus>
                   <Menu mnemonicParsing="false" text="File">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#open" text="Import" />
                         <Menu mnemonicParsing="false" text="Export">
                           <items>
                               <MenuItem mnemonicParsing="false" onAction="#toWord" text="Word" />
@@ -32,12 +32,6 @@
                         </Menu>
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Edit">
-                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#newNote" text="New note" />
-                        <MenuItem mnemonicParsing="false" onAction="#clearNotes" text="Delete all" />
                      </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Help">

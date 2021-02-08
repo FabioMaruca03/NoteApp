@@ -26,7 +26,6 @@ public class About extends Stage {
         final HBox footer = new HBox();
         footer.setAlignment(Pos.BASELINE_RIGHT);
         footer.setOpacity(0.7);
-        footer.getChildren().add(new Label("Powered by Fabio Maruca"));
         HBox.setMargin(footer, new Insets(10));
         root.setBottom(footer);
 

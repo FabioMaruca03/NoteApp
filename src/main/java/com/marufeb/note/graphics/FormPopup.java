@@ -60,8 +60,13 @@ public class FormPopup implements Initializable {
 
     @FXML
     void addLayer(ActionEvent event) {
-        formFactory.addField(layerName.getText(), components.getSelectionModel().getSelectedItem(), build.getItems().size());
-        build.getItems().add(formFactory.getLastAdded());
+        if (!layerName.getText().isBlank() && components.getSelectionModel().getSelectedItem() != null) {
+            if (formFactory.getForm().getFields().stream().noneMatch(it->it.getName().equals(layerName.getText()))) {
+                formFactory.addField(layerName.getText(), components.getSelectionModel().getSelectedItem(), build.getItems().size());
+                build.getItems().add(formFactory.getLastAdded());
+                build.getFields().values().forEach(it-> it.setEditable(false));
+            }
+        }
         event.consume();
     }
 
@@ -152,12 +157,27 @@ public class FormPopup implements Initializable {
             }
         });
 
+        build.setOnKeyTyped(e -> {
+            if (e.isShiftDown()) {
+                final Form.Field selectedItem = build.getSelectionModel().getSelectedItem();
+                final Form form = formFactory.getForm();
+                if (selectedItem != null && form != null) {
+                    form.getFields().remove(selectedItem);
+                    build.getItems().remove(selectedItem);
+                }
+            }
+        });
+
         new Thread(()-> {
             repo = new FormRepo();
-            Platform.runLater(this::updateAvailable);
+            Platform.runLater(() -> {
+                updateAvailable();
+                if (available.getItems().size() > 0)
+                    available.getSelectionModel().select(0);
+            });
         }).start();
 
-        components.setItems(FXCollections.observableArrayList(Form.FieldType.values()));
+        components.setItems(FXCollections.observableArrayList(Arrays.stream(Form.FieldType.values()).filter(it->!it.equals(Form.FieldType.CHECKBOX)&&!it.equals(Form.FieldType.LABEL)).collect(Collectors.toList())));
 
         hide(false);
     }

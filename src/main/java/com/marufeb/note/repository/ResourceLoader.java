@@ -1,16 +1,9 @@
 package com.marufeb.note.repository;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.rtf.RtfMapper;
-import com.lowagie.text.rtf.document.RtfDocument;
-import com.lowagie.text.rtf.parser.RtfParser;
 import com.marufeb.note.model.Note;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Will enable export features for .docx, .pdf, .xls and more

@@ -7,9 +7,9 @@ module NoteApp {
     requires java.persistence;
     requires java.sql;
     requires java.xml.bind;
-//    TO BE REMOVED
-    requires openrtf;
-    requires com.github.librepdf.openpdf;
+    requires poi.ooxml;
+    requires poi.ooxml.schemas;
+    requires poi;
 
     opens com.marufeb.note to javafx.controls;
     opens com.marufeb.note.graphics to javafx.controls, javafx.fxml;

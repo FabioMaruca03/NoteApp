@@ -4,6 +4,7 @@ import com.marufeb.note.graphics.form.CustomForm;
 import com.marufeb.note.graphics.note.CustomNote;
 import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
+import com.marufeb.note.model.exceptions.ExceptionsHandler;
 import com.marufeb.note.repository.NoteRepo;
 import com.marufeb.note.repository.ResourceLoader;
 import javafx.event.ActionEvent;
@@ -14,14 +15,13 @@ import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * That's the main controller. It operates with the global.fxml
@@ -56,18 +56,6 @@ public class Global implements Initializable {
     }
 
     @FXML
-    void clearNotes(ActionEvent event) {
-        notes.getItems().clear();
-        event.consume();
-    }
-
-    @FXML
-    void open(ActionEvent event) {
-        Helper.open(notes.getScene().getWindow());
-        event.consume();
-    }
-
-    @FXML
     void close(ActionEvent event) {
         ((Stage) notes.getScene().getWindow()).close();
         event.consume();
@@ -75,11 +63,25 @@ public class Global implements Initializable {
 
     @FXML
     void toExcel(ActionEvent event) {
+        final Optional<File> selection = Helper.selection(form.getScene().getWindow(), new FileChooser.ExtensionFilter(".xls only", ".xlsx"), "unnamed.xls");
+        selection.ifPresent(file -> {
+            final Note note = notes.getSelectionModel().getSelectedItem();
+            if (note != null) {
+                Helper.exportToExcel(note, file);
+            }
+        });
         event.consume();
     }
 
     @FXML
     void toWord(ActionEvent event) {
+        final Optional<File> selection = Helper.selection(form.getScene().getWindow(), new FileChooser.ExtensionFilter(".docx only", ".docx"), "unnamed.docx");
+        selection.ifPresent(file -> {
+            final Note note = notes.getSelectionModel().getSelectedItem();
+            if (note != null) {
+                Helper.exportToWord(note, file);
+            }
+        });
         event.consume();
     }
 
@@ -87,16 +89,21 @@ public class Global implements Initializable {
     void save(ActionEvent event) {
         if (updating) {
             final Note selectedItem = notes.getSelectionModel().getSelectedItem();
+            selectedItem.setModDate(Calendar.getInstance().getTime());
             form.register(selectedItem);
             noteRepo.update(selectedItem);
         } else {
-            final long new_note = notes.getItems().stream().filter(it -> it.getTitle().startsWith("new note")).count()+1;
-            final Note note = form.getForm().toNote("new note" + (new_note > 1 ? (" # " + new_note) : ""));
-            form.register(note);
+            try {
+                final long new_note = notes.getItems().stream().filter(it -> it.getTitle().startsWith("new note")).count()+1;
+                final Note note = form.getForm().toNote("new note" + (new_note > 1 ? (" # " + new_note) : ""));
+                form.register(note);
 
-            noteRepo.add(note);
-            notes.getItems().add(note);
-            form.clear();
+                noteRepo.add(note);
+                notes.getItems().add(note);
+                form.clear();
+            } catch (Exception e) {
+                ExceptionsHandler.register(e);
+            }
         }
         notes.getItems().sort(comparator);
         event.consume();
@@ -106,6 +113,8 @@ public class Global implements Initializable {
     void newNote(ActionEvent event) throws IOException {
         final Form form = Helper.selectForm();
         this.form.update(form);
+        notes.getSelectionModel().clearSelection();
+        updating = false;
         event.consume();
     }
 
@@ -116,8 +125,8 @@ public class Global implements Initializable {
         notes.setOnMouseClicked(e -> {
             final Note selectedItem = notes.getSelectionModel().getSelectedItem();
             if (selectedItem != null && selectedItem.getRelatedForm() != null) {
-                form.update(selectedItem.getRelatedForm());
                 form.init(selectedItem);
+                updating = true;
             }
             e.consume();
         });
@@ -127,6 +136,7 @@ public class Global implements Initializable {
                 if (item != null) {
                     notes.getItems().remove(item);
                     noteRepo.remove(item);
+                    form.clear();
                 }
             }
         });

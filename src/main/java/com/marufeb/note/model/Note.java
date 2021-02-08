@@ -103,7 +103,7 @@ public class Note implements Serializable {
     }
 
     public Optional<Content> getContent(String name) {
-        return content.stream().filter(it->it.name.equals(name.toLowerCase())).findFirst();
+        return content.stream().filter(it->it.name.equals(name)).findFirst();
     }
 
     public Date getModDate() {
@@ -111,6 +111,7 @@ public class Note implements Serializable {
     }
 
     public void setModDate(Date modified) {
+        this.modified = true;
         this.modDate = modified;
     }
 
