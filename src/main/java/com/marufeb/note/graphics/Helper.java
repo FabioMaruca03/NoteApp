@@ -103,6 +103,22 @@ public class Helper {
         return reference.get();
     }
 
+    /**
+     * Sorts the note content list
+     * @param note The note to be sorted
+     */
+    private static void sort(Note note) {
+        note.getContent().sort(Comparator.comparing(content-> {
+            final Optional<Form.Field> first = note.getRelatedForm().getFields().stream().filter(it -> it.getName().equals(content.getName())).findFirst();
+            return first.map(Form.Field::getIndex).orElse(Integer.MAX_VALUE);
+        }));
+    }
+
+    /**
+     * Exports a particular note to a xlsx file
+     * @param note The note you want to export
+     * @param file The xlsx file
+     */
     public static void exportToExcel(Note note, File file) {
         if (!file.exists() || file.delete()) {
             try {
@@ -135,13 +151,11 @@ public class Helper {
         }
     }
 
-    private static void sort(Note note) {
-        note.getContent().sort(Comparator.comparing(content-> {
-            final Optional<Form.Field> first = note.getRelatedForm().getFields().stream().filter(it -> it.getName().equals(content.getName())).findFirst();
-            return first.map(Form.Field::getIndex).orElse(Integer.MAX_VALUE);
-        }));
-    }
-
+    /**
+     * Exports a particular note to a docx file
+     * @param note The note you want to export
+     * @param file The docx file
+     */
     public static void exportToWord(Note note, File file) {
         if (!file.exists() || file.delete()) {
             try {
@@ -174,6 +188,7 @@ public class Helper {
 
                             row_k.addNewTableCell().setText(content.getValue().isBlank() ? "" : content.getValue());
                         }
+
                     });
                 });
 
