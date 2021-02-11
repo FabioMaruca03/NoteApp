@@ -209,7 +209,10 @@ public class CustomForm extends ListView<Form.Field> {
     public void register(Note note) {
         components.forEach((key, value) -> {
             try {
-                note.getContent(key).ifPresentOrElse(content -> content.setValue(value.getText().isBlank() ? "[-]" : value.getText()), () -> note.addContent(key, value.getText()));
+                note.getContent(key).ifPresentOrElse(content ->
+                        content.setValue(value.getText().isBlank() ? "[-]" : value.getText()),
+                        () -> note.addContent(key, value.getText())
+                );
             } catch (NullPointerException ignore) {
                 note.addContent(key, value.getText());
             }

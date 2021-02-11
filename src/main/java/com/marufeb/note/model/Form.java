@@ -16,18 +16,19 @@ import java.util.List;
         @NamedQuery(name = "Form.list", query = "SELECT f FROM form f")
 })
 @Table(name = "forms")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Form implements Serializable {
 
     @Id
     @GeneratedValue
-    private long id;
+    protected long id;
 
     @OneToMany(targetEntity = Field.class, cascade = CascadeType.ALL)
     @JoinTable(name="form_to_fields", joinColumns = @JoinColumn(name = "form_id"), inverseJoinColumns = @JoinColumn(name = "field_id"))
     public List<Field> fields;
 
     @Column
-    private String name;
+    protected String name;
 
     public Form() {
         postLoad();

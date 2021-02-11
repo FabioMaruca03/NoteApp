@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -30,6 +31,7 @@
                               <MenuItem mnemonicParsing="false" onAction="#toExcel" text="Excel" />
                           </items>
                         </Menu>
+                        <MenuItem mnemonicParsing="false" text="Generate charts" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
                      </items>
@@ -50,6 +52,11 @@
                         <Insets bottom="10.0" top="10.0" />
                      </VBox.margin>
                   </Text>
+                  <TextField fx:id="searchBox" promptText="Search">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </TextField>
                   <ListView fx:id="notes" prefHeight="346.0" prefWidth="112.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -66,12 +73,20 @@
          <center>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PROPERTIES">
+                  <BorderPane>
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
-                  </Text>
+                     <center>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PROPERTIES" />
+                     </center>
+                     <right>
+                        <Text fx:id="treatments" strokeType="OUTSIDE" strokeWidth="0.0" text="0" BorderPane.alignment="CENTER" />
+                     </right>
+                  </BorderPane>
+
                   <CustomForm fx:id="form" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+
                   <HBox alignment="CENTER" prefHeight="55.0" prefWidth="517.0">
                      <VBox.margin>
                         <Insets bottom="20.0" />

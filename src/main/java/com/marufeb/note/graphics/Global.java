@@ -7,6 +7,7 @@ import com.marufeb.note.model.Note;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 import com.marufeb.note.repository.NoteRepo;
 import com.marufeb.note.repository.ResourceLoader;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +15,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -22,6 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * That's the main controller. It operates with the global.fxml
@@ -48,6 +54,12 @@ public class Global implements Initializable {
 
     @FXML
     private CustomForm form;
+
+    @FXML
+    private TextField searchBox;
+
+    @FXML
+    private Text treatments;
 
     @FXML
     void about(ActionEvent event) {
@@ -122,17 +134,52 @@ public class Global implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         notes.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         notes.setCellFactory(v -> new CustomNote(noteRepo::update));
+
+        final AtomicReference<Note> selectedCache = new AtomicReference<>(null);
+        final AtomicBoolean first = new AtomicBoolean(true);
+        final Semaphore noteUpdater = new Semaphore(1);
         notes.setOnMouseClicked(e -> {
+            try { // Async call
+                noteUpdater.acquire(1);
+            } catch (InterruptedException ignore) { }
+
             final Note selectedItem = notes.getSelectionModel().getSelectedItem();
+            if (selectedCache.get() == null)
+                selectedCache.set(selectedItem);
+            else first.set(false);
+
             if (selectedItem != null && selectedItem.getRelatedForm() != null) {
-                form.init(selectedItem);
+
+                if (selectedCache.get() != null) {
+                    new Thread(() -> { // Async Note update
+                        try {
+                            noteUpdater.acquire(1);
+                            final Note note = selectedCache.get();
+                            if (note != null && !first.get()) {
+                                final int tempHash = note.hashCode();
+                                form.register(note);
+                                if (note.hashCode() != tempHash) { // Detect changes
+                                    note.setModDate(Calendar.getInstance().getTime());
+                                    noteRepo.update(note);
+                                }
+                            }
+                            noteUpdater.release(1);
+                        } catch (InterruptedException ignore) { } finally {
+                            selectedCache.set(selectedItem);
+                            Platform.runLater(() -> form.init(selectedItem));
+                        }
+                    }).start();
+                } else form.init(selectedItem);
                 updating = true;
-            }
+            } else selectedCache.set(null);
+
+            noteUpdater.release(1);
             e.consume();
         });
+
         notes.setOnKeyTyped(e -> {
             if (e.isShiftDown()) {
-                final Note item = notes.getSelectionModel().getSelectedItem();
+                final Note item = selectedCache.get();
                 if (item != null) {
                     notes.getItems().remove(item);
                     noteRepo.remove(item);
@@ -140,6 +187,36 @@ public class Global implements Initializable {
                 }
             }
         });
-        noteRepo.getAll().forEach(it->notes.getItems().add(it));
+
+        final AtomicReference<List<Note>> cache = new AtomicReference<>(noteRepo.getAll());
+        searchBox.textProperty().addListener((ob, o, n) -> {
+            if (n.isBlank()) {
+                notes.getItems().clear();
+                cache.get().forEach(it->notes.getItems().add(it));
+            } else {
+                notes.getItems().clear();
+                cache.get().stream().filter(it -> {
+                    final List<Note.Content> contents = it.getContent();
+                    final Optional<Note.Content> name = contents.stream().filter(content -> content.getName().toLowerCase().equals("name")).findFirst();
+                    final Optional<Note.Content> work = contents.stream().filter(content -> content.getName().toLowerCase().equals("work")).findFirst();
+                    if (name.isPresent()) {
+                        if (!name.get().getValue().isBlank()) {
+                            return name.get().getValue().contains(searchBox.getText());
+                        }
+                    }
+                    if (work.isPresent()) {
+                        if (!work.get().getValue().isBlank()) {
+                            return work.get().getValue().contains(searchBox.getText());
+                        }
+                    }
+                    return false;
+                }).forEach(note -> notes.getItems().add(note));
+            }
+        });
+        searchBox.setOnAction(e -> {
+            cache.set(noteRepo.getAll());
+            e.consume();
+        }) ;
+        cache.get().forEach(it->notes.getItems().add(it));
     }
 }
