@@ -17,6 +17,7 @@ module NoteApp {
 
     exports com.marufeb.note;
     exports com.marufeb.note.graphics;
+    exports com.marufeb.note.graphics.charts;
     exports com.marufeb.note.graphics.form;
     exports com.marufeb.note.model;
     exports com.marufeb.note.model.exceptions;

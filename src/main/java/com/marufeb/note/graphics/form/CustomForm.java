@@ -21,6 +21,7 @@ import java.util.concurrent.Semaphore;
  * @author fabiomaruca
  * @since January 2021
  */
+@SuppressWarnings("unused")
 public class CustomForm extends ListView<Form.Field> {
     private Form form;
     private final Map<String, TextField> components = new HashMap<>();
@@ -32,7 +33,6 @@ public class CustomForm extends ListView<Form.Field> {
      * Updates the current status to the given Form. Then constructs the whole {@link Form}
      * @param form The form to use
      */
-    @SuppressWarnings("unused")
     public CustomForm(Form form) {
         this();
         update(form);
@@ -42,7 +42,7 @@ public class CustomForm extends ListView<Form.Field> {
      * Initializes the cell factory
      */
     public CustomForm() {
-        setCellFactory(cell -> new ListCell<Form.Field>() {
+        setCellFactory(cell -> new ListCell<>() {
             @Override
             protected void updateItem(Form.Field item, boolean empty) {
                 super.updateItem(item, empty);
@@ -58,10 +58,8 @@ public class CustomForm extends ListView<Form.Field> {
      * @param form The form you want to use
      */
     public synchronized void update(Form form) {
-//        if (semaphore == null || permits != form.fields.size()-1) {
-            permits = form.fields.size() - 1;
-            this.semaphore = new Semaphore(permits);
-//        }
+        permits = form.fields.size() - 1;
+        this.semaphore = new Semaphore(permits);
         if (clear) {
             clear();
             this.form = form;
@@ -119,17 +117,6 @@ public class CustomForm extends ListView<Form.Field> {
                 f = component;
                 break;
             }
-//            case CHECKBOX: {
-//                final CheckBox checkBox = new CheckBox();
-//                temp.setRight(checkBox);
-//                break;
-//            }
-
-//            case LABEL: {
-//                final Label label = createLabel(temp);
-//                label.setText("PropertyName");
-//                temp.setRight(label);
-//            }
             default:
                 f = null;
         }
@@ -154,21 +141,9 @@ public class CustomForm extends ListView<Form.Field> {
     private Label createLabel(BorderPane temp) {
         final Label label = new Label();
         final TextField name = new TextField();
+
         name.setPromptText("Property name");
-//        label.setOnMouseClicked(e->{       // DISABLED
-//            if (e.getClickCount() == 2) {
-//                name.setText(label.getText());
-//                temp.setLeft(name);
-//            }
-//            e.consume();
-//        });
-//        label.setOnKeyTyped(e->{
-//            if (e.getCode() == KeyCode.ENTER) {
-//                label.setText(name.getText());
-//                name.clear();
-//            }
-//            e.consume();
-//        });
+
         return label;
     }
 
@@ -184,17 +159,15 @@ public class CustomForm extends ListView<Form.Field> {
             try {
                 this.semaphore.acquire(permits);
                 Thread.sleep(30);
-                note.getContent().forEach(content -> {
-                    Platform.runLater(() -> {
-                        try {
-                            components.get(content.getName()).setText(content.getValue());
-                        } catch (Exception e) {
-                            ExceptionsHandler.register(e);
-                        } finally {
-                            this.semaphore.release(permits);
-                        }
-                    });
-                });
+                note.getContent().forEach(content -> Platform.runLater(() -> {
+                    try {
+                        components.get(content.getName()).setText(content.getValue());
+                    } catch (Exception e) {
+                        ExceptionsHandler.register(e);
+                    } finally {
+                        this.semaphore.release(permits);
+                    }
+                }));
             } catch (InterruptedException e) {
                 ExceptionsHandler.register(e);
             }
@@ -222,7 +195,6 @@ public class CustomForm extends ListView<Form.Field> {
     /**
      * @return A map which contains all typed components inside it
      */
-    @SuppressWarnings("unused")
     public Map<String, String> getComponents() {
         final Map<String, String> result = new HashMap<>();
         components.forEach((key, value) -> {

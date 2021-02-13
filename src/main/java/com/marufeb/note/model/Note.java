@@ -43,6 +43,10 @@ public class Note implements Serializable {
     @JoinTable(name = "content", joinColumns = @JoinColumn(name = "note_id"), inverseJoinColumns = @JoinColumn(name = "content_id"))
     private List<Content> content;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "content", joinColumns = @JoinColumn(name = "note_id"), inverseJoinColumns = @JoinColumn(name = "treatment_id "))
+    private List<Treatment> treatments;
+
     /**
      * Empty constructor - used by HIBERNATE -
      */
@@ -113,6 +117,10 @@ public class Note implements Serializable {
     public void setModDate(Date modified) {
         this.modified = true;
         this.modDate = modified;
+    }
+
+    public int getTreatments() { // FIXME
+        return 0;
     }
 
     public Date getCreation() {

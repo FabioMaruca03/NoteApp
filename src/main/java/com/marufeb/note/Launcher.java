@@ -1,15 +1,11 @@
 package com.marufeb.note;
 
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
-import com.marufeb.note.repository.NoteRepo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 
 import static com.marufeb.note.graphics.Helper.*;
 

@@ -6,6 +6,7 @@
         <class>com.marufeb.note.model.Form</class>
         <class>com.marufeb.note.model.Form$Field</class>
         <class>com.marufeb.note.model.Form$FieldType</class>
+        <class>com.marufeb.note.model.Treatment</class>
         <class>com.marufeb.note.model.Note$Content</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>

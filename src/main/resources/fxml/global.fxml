@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -17,7 +18,8 @@
 
 <?import com.marufeb.note.graphics.form.CustomForm?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="469.0" prefWidth="717.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.marufeb.note.graphics.Global">
+<?import com.marufeb.note.graphics.charts.ReferredByChart?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="596.0" prefWidth="1067.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.marufeb.note.graphics.Global">
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -101,6 +103,18 @@
                </BorderPane.margin>
             </VBox>
          </center>
+         <right>
+            <BorderPane prefHeight="441.0" prefWidth="327.0" BorderPane.alignment="CENTER">
+               <center>
+                  <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <ReferredByChart fx:id="referred" />
+                        <PieChart layoutX="10.0" layoutY="10.0" />
+                     </children>
+                  </VBox>
+               </center>
+            </BorderPane>
+         </right>
       </BorderPane>
       <Text fill="#949292" layoutX="455.0" layoutY="397.0" opacity="0.54" strokeType="OUTSIDE" strokeWidth="0.0" text="Powered by Fabio Maruca" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
       <Separator layoutX="204.0" orientation="VERTICAL" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="204.0" AnchorPane.topAnchor="0.0">

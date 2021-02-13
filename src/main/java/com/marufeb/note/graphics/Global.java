@@ -1,5 +1,6 @@
 package com.marufeb.note.graphics;
 
+import com.marufeb.note.graphics.charts.ReferredByChart;
 import com.marufeb.note.graphics.form.CustomForm;
 import com.marufeb.note.graphics.note.CustomNote;
 import com.marufeb.note.model.Form;
@@ -48,6 +49,9 @@ public class Global implements Initializable {
             return o1.getCreation().after(o2.getModDate())?0:1;
         else return o1.getCreation().after(o2.getCreation())?0:1;
     };
+
+    @FXML
+    public ReferredByChart referred;
 
     @FXML
     private ListView<Note> notes;
@@ -149,7 +153,7 @@ public class Global implements Initializable {
             else first.set(false);
 
             if (selectedItem != null && selectedItem.getRelatedForm() != null) {
-
+                treatments.setText(String.valueOf(selectedItem.getTreatments()));
                 if (selectedCache.get() != null) {
                     new Thread(() -> { // Async Note update
                         try {
@@ -218,5 +222,8 @@ public class Global implements Initializable {
             e.consume();
         }) ;
         cache.get().forEach(it->notes.getItems().add(it));
+
+        ReferredByChart.repo = noteRepo;
+        referred.setData(ReferredByChart.update());
     }
 }
