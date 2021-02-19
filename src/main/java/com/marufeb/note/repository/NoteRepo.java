@@ -39,7 +39,10 @@ public class NoteRepo implements Repository<Note, Long> {
 
     @Override
     public void update(Note obj) {
-        RepoUtils.executeNotes(em->em.merge(obj));
+        RepoUtils.executeNotes(em-> {
+            obj.getTreatments().forEach(em::merge);
+            em.merge(obj);
+        });
     }
 
     @Override

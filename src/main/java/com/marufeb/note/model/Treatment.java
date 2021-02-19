@@ -1,20 +1,27 @@
 package com.marufeb.note.model;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 /**
  * <pre> Represents a medical treatment.
  * According to the client request the {@link Treatment} class will be static and non dynamically changeable.</pre>
+ * @author fabiomaruca
+ * @since February 2021
  */
 @Entity(name = "Treatment")
-@DiscriminatorValue("treatment")
+@Table(name = "treatments")
 @SuppressWarnings("unused")
-public class Treatment extends Form {
+public class Treatment {
+
+    @Id
+    @GeneratedValue
+    private long id;
 
     @Column(name = "n")
     private int tNumber;
+
+    @ManyToOne
+    private Note reference;
 
     private String date;
 
@@ -68,5 +75,21 @@ public class Treatment extends Form {
 
     public void setTTT(String TTT) {
         this.TTT = TTT;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Note getReference() {
+        return reference;
+    }
+
+    public void setReference(Note reference) {
+        this.reference = reference;
     }
 }

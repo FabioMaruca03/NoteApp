@@ -16,9 +16,6 @@ import java.util.List;
         @NamedQuery(name = "Form.list", query = "SELECT f FROM form f")
 })
 @Table(name = "forms")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type")
-@DiscriminatorValue("form")
 @SuppressWarnings("unused")
 public class Form implements Serializable {
 

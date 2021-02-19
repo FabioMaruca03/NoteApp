@@ -1,23 +1,21 @@
 package com.marufeb.note.graphics;
 
 import com.marufeb.note.graphics.charts.ReferredByChart;
+import com.marufeb.note.graphics.charts.TreatmentsChart;
 import com.marufeb.note.graphics.form.CustomForm;
 import com.marufeb.note.graphics.note.CustomNote;
 import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
+import com.marufeb.note.model.Treatment;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 import com.marufeb.note.repository.NoteRepo;
-import com.marufeb.note.repository.ResourceLoader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -52,6 +50,9 @@ public class Global implements Initializable {
 
     @FXML
     public ReferredByChart referred;
+
+    @FXML
+    public TreatmentsChart treatmentsChart;
 
     @FXML
     private ListView<Note> notes;
@@ -108,6 +109,7 @@ public class Global implements Initializable {
             selectedItem.setModDate(Calendar.getInstance().getTime());
             form.register(selectedItem);
             noteRepo.update(selectedItem);
+            referred.setData(ReferredByChart.update());
         } else {
             try {
                 final long new_note = notes.getItems().stream().filter(it -> it.getTitle().startsWith("new note")).count()+1;
@@ -151,9 +153,8 @@ public class Global implements Initializable {
             if (selectedCache.get() == null)
                 selectedCache.set(selectedItem);
             else first.set(false);
-
             if (selectedItem != null && selectedItem.getRelatedForm() != null) {
-                treatments.setText(String.valueOf(selectedItem.getTreatments()));
+                treatments.setText(String.valueOf(selectedItem.getTreatmentsNumber()));
                 if (selectedCache.get() != null) {
                     new Thread(() -> { // Async Note update
                         try {
@@ -165,6 +166,7 @@ public class Global implements Initializable {
                                 if (note.hashCode() != tempHash) { // Detect changes
                                     note.setModDate(Calendar.getInstance().getTime());
                                     noteRepo.update(note);
+                                    Platform.runLater(()-> referred.setData(ReferredByChart.update()));
                                 }
                             }
                             noteUpdater.release(1);
@@ -225,5 +227,9 @@ public class Global implements Initializable {
 
         ReferredByChart.repo = noteRepo;
         referred.setData(ReferredByChart.update());
+
+        TreatmentsChart.repo = noteRepo;
+        treatmentsChart.setData(TreatmentsChart.update());
+
     }
 }

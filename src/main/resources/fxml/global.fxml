@@ -1,126 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-
-<?import com.marufeb.note.graphics.form.CustomForm?>
-
 <?import com.marufeb.note.graphics.charts.ReferredByChart?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="596.0" prefWidth="1067.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.marufeb.note.graphics.Global">
-   <children>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <top>
+<?import com.marufeb.note.graphics.charts.TreatmentsChart?>
+<?import com.marufeb.note.graphics.form.CustomForm?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="596.0"
+            prefWidth="1067.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.marufeb.note.graphics.Global">
+    <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <top>
             <MenuBar BorderPane.alignment="CENTER">
-               <menus>
-                  <Menu mnemonicParsing="false" text="File">
-                     <items>
-                        <Menu mnemonicParsing="false" text="Export">
-                          <items>
-                              <MenuItem mnemonicParsing="false" onAction="#toWord" text="Word" />
-                              <MenuItem mnemonicParsing="false" onAction="#toExcel" text="Excel" />
-                          </items>
-                        </Menu>
-                        <MenuItem mnemonicParsing="false" text="Generate charts" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
-                     </items>
-                  </Menu>
-               </menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <Menu mnemonicParsing="false" text="Export">
+                        <MenuItem mnemonicParsing="false" onAction="#toWord" text="Word"/>
+                        <MenuItem mnemonicParsing="false" onAction="#toExcel" text="Excel"/>
+                    </Menu>
+                    <SeparatorMenuItem mnemonicParsing="false"/>
+                    <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <MenuItem mnemonicParsing="false" onAction="#about" text="About"/>
+                </Menu>
             </MenuBar>
-         </top>
-         <left>
+        </top>
+        <left>
             <VBox alignment="TOP_CENTER" prefHeight="372.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="MY NOTES">
-                     <VBox.margin>
-                        <Insets bottom="10.0" top="10.0" />
-                     </VBox.margin>
-                  </Text>
-                  <TextField fx:id="searchBox" promptText="Search">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextField>
-                  <ListView fx:id="notes" prefHeight="346.0" prefWidth="112.0" VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </ListView>
-                  <Button mnemonicParsing="false" onAction="#newNote" prefHeight="27.0" prefWidth="150.0" text="New">
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </Button>
-               </children>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="MY NOTES">
+                    <VBox.margin>
+                        <Insets bottom="10.0" top="10.0"/>
+                    </VBox.margin>
+                </Text>
+                <TextField fx:id="searchBox" promptText="Search">
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </TextField>
+                <ListView fx:id="notes" prefHeight="346.0" prefWidth="112.0" VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </ListView>
+                <Button mnemonicParsing="false" onAction="#newNote" prefHeight="27.0" prefWidth="150.0"
+                        text="New">
+                    <VBox.margin>
+                        <Insets bottom="20.0"/>
+                    </VBox.margin>
+                </Button>
             </VBox>
-         </left>
-         <center>
+        </left>
+        <center>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-               <children>
-                  <BorderPane>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                     <center>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PROPERTIES" />
-                     </center>
-                     <right>
-                        <Text fx:id="treatments" strokeType="OUTSIDE" strokeWidth="0.0" text="0" BorderPane.alignment="CENTER" />
-                     </right>
-                  </BorderPane>
+                <BorderPane.margin>
+                    <Insets left="20.0" right="20.0" top="20.0"/>
+                </BorderPane.margin>
+                <BorderPane>
+                    <VBox.margin>
+                        <Insets bottom="10.0"/>
+                    </VBox.margin>
+                    <center>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="PROPERTIES"/>
+                    </center>
+                    <right>
+                        <Text fx:id="treatments" strokeType="OUTSIDE" strokeWidth="0.0" text="0"
+                              BorderPane.alignment="CENTER"/>
+                    </right>
+                </BorderPane>
 
-                  <CustomForm fx:id="form" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                <CustomForm fx:id="form" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
 
-                  <HBox alignment="CENTER" prefHeight="55.0" prefWidth="517.0">
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#save" prefWidth="200.0" text="Save" />
-                     </children>
-                  </HBox>
-               </children>
-               <BorderPane.margin>
-                  <Insets left="20.0" right="20.0" top="20.0" />
-               </BorderPane.margin>
+                <HBox alignment="CENTER" prefHeight="55.0" prefWidth="517.0">
+                    <VBox.margin>
+                        <Insets bottom="20.0"/>
+                    </VBox.margin>
+                    <Button mnemonicParsing="false" onAction="#save" prefWidth="200.0" text="Save"/>
+                </HBox>
             </VBox>
-         </center>
-         <right>
+        </center>
+        <right>
             <BorderPane prefHeight="441.0" prefWidth="327.0" BorderPane.alignment="CENTER">
-               <center>
-                  <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <ReferredByChart fx:id="referred" />
-                        <PieChart layoutX="10.0" layoutY="10.0" />
-                     </children>
-                  </VBox>
-               </center>
+                <center>
+                    <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                        <ReferredByChart fx:id="referred"/>
+                        <TreatmentsChart fx:id="treatmentsChart"/>
+                    </VBox>
+                </center>
             </BorderPane>
-         </right>
-      </BorderPane>
-      <Text fill="#949292" layoutX="455.0" layoutY="397.0" opacity="0.54" strokeType="OUTSIDE" strokeWidth="0.0" text="Powered by Fabio Maruca" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-      <Separator layoutX="204.0" orientation="VERTICAL" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="204.0" AnchorPane.topAnchor="0.0">
-         <padding>
-            <Insets bottom="100.0" top="100.0" />
-         </padding>
-      </Separator>
-   </children>
+        </right>
+    </BorderPane>
+    <Text fill="#949292" layoutX="455.0" layoutY="397.0" opacity="0.54" strokeType="OUTSIDE" strokeWidth="0.0"
+          text="Powered by Fabio Maruca" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0"/>
+    <Separator layoutX="204.0" orientation="VERTICAL" prefHeight="200.0" AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="204.0" AnchorPane.topAnchor="0.0">
+        <padding>
+            <Insets bottom="100.0" top="100.0"/>
+        </padding>
+    </Separator>
 </AnchorPane>

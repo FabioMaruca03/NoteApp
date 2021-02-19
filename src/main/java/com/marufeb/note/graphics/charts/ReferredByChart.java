@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Represents a PieChart based on who references people
  * @author fabiomaruca
- * @since January 2021
+ * @since February 2021
  */
 public class ReferredByChart extends PieChart {
     public static NoteRepo repo;
@@ -25,24 +24,28 @@ public class ReferredByChart extends PieChart {
         setTitle("Referred By");
     }
 
+    /**
+     * Updates the chart based on each {@link Note}'s content which has a name of: <b>Referred by</b>.
+     * Please note that it does not automatically set the new data inside the chart. Use the proper setData() method.
+     * @return The resulting {@link ObservableList}
+     */
     public static ObservableList<Data> update() {
         final ObservableList<Data> data = FXCollections.observableArrayList();
-        final Stream<Note> referred_by1 = repo.getAll().stream().filter(it -> !it.getContent().isEmpty() && it.getContent("Referred by").isPresent());
-        if (referred_by1.findFirst().isPresent()) {
-            final Map<String, List<Note>> collect = referred_by1
+        final List<Note> referred_by1 = repo.getAll().stream().filter(it -> !it.getContent().isEmpty() && it.getContent("Referred by").isPresent()).collect(Collectors.toList());
+        if (referred_by1.stream().findFirst().isPresent()) {
+            final Map<String, List<Note>> collect = referred_by1.stream()
                     .collect(Collectors.groupingBy(it -> {
                         final Optional<Note.Content> referred_by = it.getContent("Referred by");
                         if (referred_by.isPresent())
                             return referred_by.get().getValue();
                         else return "unknown";
                     }));
-            collect.forEach((k, v)-> data.add(new Data(k, v.size())));
+            collect.forEach((k, v)-> {
+                data.add(new Data(k, v.size()));
+                v.forEach(value -> System.out.println(k + "\t -> \t" + value));
+            });
         }
         return data;
-    }
-
-    public void apply(ObservableList<Data> data) {
-        this.setData(data);
     }
 
 }

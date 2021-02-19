@@ -53,7 +53,9 @@ public class Helper {
         final FXMLLoader loader = new FXMLLoader(Helper.class.getResource("/fxml/"+fileName+".fxml"));
         try {
             final Parent load = loader.load();
+
             mid.accept(load);
+
             return new Scene(load);
         } catch (IOException e) {
             e.printStackTrace();
