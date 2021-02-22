@@ -6,19 +6,23 @@ import com.marufeb.note.graphics.form.CustomForm;
 import com.marufeb.note.graphics.note.CustomNote;
 import com.marufeb.note.model.Form;
 import com.marufeb.note.model.Note;
-import com.marufeb.note.model.Treatment;
 import com.marufeb.note.model.exceptions.ExceptionsHandler;
 import com.marufeb.note.repository.NoteRepo;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,6 +103,39 @@ public class Global implements Initializable {
                 Helper.exportToWord(note, file);
             }
         });
+        event.consume();
+    }
+
+    @FXML
+    void showTreatments(ActionEvent event) throws IOException {
+        final Note selectedItem = notes.getSelectionModel().getSelectedItem();
+        if (selectedItem!=null) {
+            final Stage stage = new Stage(StageStyle.DECORATED);
+            stage.initOwner(about.getOwner());
+            stage.initModality(Modality.WINDOW_MODAL);
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/treatments.fxml"));
+            final Treatments controller = new Treatments();
+            loader.setController(controller);
+            stage.setScene(new Scene(loader.load()));
+
+            stage.setOnCloseRequest(e -> {
+                controller.registerGlobally(selectedItem);
+                noteRepo.update(selectedItem);
+                stage.close();
+                e.consume();
+            });
+
+            stage.setTitle(selectedItem.getTitle() + "'s treatments");
+            stage.setAlwaysOnTop(true);
+
+            stage.setMaxWidth(600);
+            stage.setMaxHeight(600);
+
+            controller.init(selectedItem);
+            stage.showAndWait();
+            treatmentsChart.setData(TreatmentsChart.update());
+            treatments.setText(String.valueOf(treatmentsChart.getData().size()));
+        }
         event.consume();
     }
 
@@ -222,7 +259,7 @@ public class Global implements Initializable {
         searchBox.setOnAction(e -> {
             cache.set(noteRepo.getAll());
             e.consume();
-        }) ;
+        });
         cache.get().forEach(it->notes.getItems().add(it));
 
         ReferredByChart.repo = noteRepo;
@@ -230,6 +267,8 @@ public class Global implements Initializable {
 
         TreatmentsChart.repo = noteRepo;
         treatmentsChart.setData(TreatmentsChart.update());
+
+        Treatments.repo = noteRepo;
 
     }
 }

@@ -23,9 +23,9 @@ import java.util.concurrent.Semaphore;
  */
 @SuppressWarnings("unused")
 public class CustomForm extends ListView<Form.Field> {
-    private Form form;
-    private final Map<String, TextField> components = new HashMap<>();
-    private boolean clear = true;
+    protected Form form;
+    protected final Map<String, TextField> components = new HashMap<>();
+    protected boolean clear = true;
     private Semaphore semaphore;
     private int permits;
 

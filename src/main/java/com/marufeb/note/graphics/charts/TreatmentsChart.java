@@ -29,10 +29,7 @@ public class TreatmentsChart extends PieChart {
         if (referred_by1.stream().findFirst().isPresent()) {
             final Map<Integer, List<Note>> collect = referred_by1.stream()
                     .collect(Collectors.groupingBy(it -> it.getTreatments().size()));
-            collect.forEach((k, v)-> {
-                data.add(new Data(String.valueOf(k), v.size()));
-                v.forEach(value -> System.out.println(k + "\t -> \t" + value));
-            });
+            collect.forEach((k, v)-> data.add(new Data(String.valueOf(k), v.size())));
         }
         return data;
     }

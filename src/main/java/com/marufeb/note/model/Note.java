@@ -51,9 +51,7 @@ public class Note implements Serializable {
     /**
      * Empty constructor - used by HIBERNATE -
      */
-    public Note() {
-        addTreatment(new Treatment());
-    }
+    public Note() { }
 
     /**
      * Creates a new note with a title and a creation date
@@ -99,8 +97,8 @@ public class Note implements Serializable {
     }
 
     public void addTreatment(Treatment treatment) {
-        System.out.println("Created treatment");
         if (!treatments.contains(treatment)) {
+            System.out.println("Created treatment ("+treatments.size()+")");
             treatment.setReference(this);
             treatment.setNumber(treatments.size());
             treatments.add(treatment);

@@ -40,10 +40,7 @@ public class ReferredByChart extends PieChart {
                             return referred_by.get().getValue();
                         else return "unknown";
                     }));
-            collect.forEach((k, v)-> {
-                data.add(new Data(k, v.size()));
-                v.forEach(value -> System.out.println(k + "\t -> \t" + value));
-            });
+            collect.forEach((k, v)-> data.add(new Data(k, v.size())));
         }
         return data;
     }
